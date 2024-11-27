@@ -5,8 +5,10 @@ const stompClient = new StompJs.Client({
 stompClient.onConnect = (frame) => {
     setConnected(true);
     console.log('Connected: ' + frame);
-    stompClient.subscribe('/topic/greetings', (greeting) => {
-        showGreeting(JSON.parse(greeting.body).content);
+    stompClient.subscribe('/topic/token', (response) => {
+        console.log('Response body: ', response.body);  // 추가: 응답 내용 확인
+        const token = JSON.parse(response.body).token; // 응답에서 token 값을 추출
+        showGreeting(token); // token을 화면에 출력
     });
 };
 
@@ -42,14 +44,18 @@ function disconnect() {
 }
 
 function sendName() {
-    stompClient.publish({
-        destination: "/app/hello",
-        body: JSON.stringify({'name': $("#name").val()})
-    });
+     const messageData = {
+            uuid: $("#uuid").val(),
+            concertId: 1  // concertId 값을 추가
+       };
+     stompClient.publish({
+            destination: "/api/v1/waitingQueue/token",  // 서버에서 처리하는 엔드포인트
+            body: JSON.stringify(messageData)  // JSON 형식으로 메시지 전송
+     });
 }
 
-function showGreeting(message) {
-    $("#greetings").append("<tr><td>" + message + "</td></tr>");
+function showGreeting(token) {
+    $("#greetings").append("<tr><td>Token: " + token + "</td></tr>");
 }
 
 $(function () {

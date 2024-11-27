@@ -33,6 +33,9 @@ dependencies {
 
 	// Spring Boot WebSocket 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+	// Redisson 라이브러리 추가
+	implementation 'org.redisson:redisson-spring-boot-starter:3.18.0'
 }
 
 tasks.named('test') {

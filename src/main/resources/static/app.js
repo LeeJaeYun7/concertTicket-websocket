@@ -8,7 +8,13 @@ stompClient.onConnect = (frame) => {
     stompClient.subscribe('/topic/token', (response) => {
         console.log('Response body: ', response.body);  // 추가: 응답 내용 확인
         const token = JSON.parse(response.body).token; // 응답에서 token 값을 추출
-        showGreeting(token); // token을 화면에 출력
+        showToken(token); // token을 화면에 출력
+    });
+
+    stompClient.subscribe('/topic/rank', (response) => {
+            console.log('Response body: ', response.body);  // 추가: 응답 내용 확인
+            const rank = JSON.parse(response.body).rank; // 응답에서 rank 값을 추출
+            showRank(rank); // rank를 화면에 출력
     });
 };
 
@@ -43,7 +49,7 @@ function disconnect() {
     console.log("Disconnected");
 }
 
-function sendName() {
+function sendUuid() {
      const messageData = {
             uuid: $("#uuid").val(),
             concertId: 1  // concertId 값을 추가
@@ -54,13 +60,36 @@ function sendName() {
      });
 }
 
-function showGreeting(token) {
-    $("#greetings").append("<tr><td>Token: " + token + "</td></tr>");
+function sendToken() {
+     const messageData = {
+            token: $("#token").val(),
+            concertId: 1  // concertId 값을 추가
+     };
+
+     console.log("Sending message:", messageData);  // 메시지 데이터 확인
+     console.log("Publishing message to /api/v1/waitingQueue/rank");
+
+     stompClient.publish({
+            destination: "/api/v1/waitingQueue/rank",  // 서버에서 처리하는 엔드포인트
+            body: JSON.stringify(messageData)  // JSON 형식으로 메시지 전송
+     });
+}
+
+function showToken(token) {
+    $("#tokens").append("<tr><td>Token: " + token + "</td></tr>");
+}
+
+function showRank(rank) {
+    $("#ranks").append("<tr><td>Token: " + token + "</td></tr>");
 }
 
 $(function () {
     $("form").on('submit', (e) => e.preventDefault());
-    $( "#connect" ).click(() => connect());
-    $( "#disconnect" ).click(() => disconnect());
-    $( "#send" ).click(() => sendName());
+    $("#connect").click(() => connect());
+    $("#disconnect").click(() => disconnect());
+    $("#send").click(() => sendUuid());
+    $("#sendToken").click( () => {
+        console.log("sendToken button clicked");
+        sendToken()
+    });
 });

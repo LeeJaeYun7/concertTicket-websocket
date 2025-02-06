@@ -1,13 +1,15 @@
-package com.example.concertTicket_websocket.waitingQueue.dto.response;
+package com.example.concertTicket_websocket.waitingQueue.controller.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class WaitingRankResponse {
 
-    private final long waitingRank;
-    private final String status;
+    private long waitingRank;
+    private String status;
 
     @Builder
     public WaitingRankResponse(long waitingRank, String status){

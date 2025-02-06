@@ -1,9 +1,9 @@
 package com.example.concertTicket_websocket.waitingQueue.controller;
 
-import com.example.concertTicket_websocket.waitingQueue.dto.request.TokenRequest;
-import com.example.concertTicket_websocket.waitingQueue.dto.request.WaitingRankRequest;
-import com.example.concertTicket_websocket.waitingQueue.dto.response.TokenResponse;
-import com.example.concertTicket_websocket.waitingQueue.dto.response.WaitingRankResponse;
+import com.example.concertTicket_websocket.waitingQueue.controller.dto.request.TokenRequest;
+import com.example.concertTicket_websocket.waitingQueue.controller.dto.request.WaitingRankRequest;
+import com.example.concertTicket_websocket.waitingQueue.controller.dto.response.TokenResponse;
+import com.example.concertTicket_websocket.waitingQueue.controller.dto.response.WaitingRankResponse;
 import com.example.concertTicket_websocket.waitingQueue.service.WaitingQueueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -17,7 +17,7 @@ public class WaitingQueueController {
     private final WaitingQueueService waitingQueueService;
     @MessageMapping("/waitingQueue/token")
     @SendTo("/topic/token")
-    public TokenResponse retrieveToken(TokenRequest tokenRequest) throws Exception {
+    public TokenResponse retrieveToken(TokenRequest tokenRequest) {
         long concertId = tokenRequest.getConcertId();
         String uuid = tokenRequest.getUuid();
 
@@ -30,8 +30,6 @@ public class WaitingQueueController {
     public WaitingRankResponse retrieveWaitingRank(WaitingRankRequest waitingRankRequest) {
         long concertId = waitingRankRequest.getConcertId();
         String token = waitingRankRequest.getToken();
-        String uuid = token.split(":")[1];
-
-        return waitingQueueService.retrieveWaitingRank(concertId, uuid);
+        return waitingQueueService.retrieveWaitingRank(concertId, token);
     }
 }

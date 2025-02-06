@@ -1,4 +1,4 @@
-package com.example.concertTicket_websocket.waitingQueue.dto.request;
+package com.example.concertTicket_websocket.waitingQueue.controller.dto.request;
 
 import lombok.Builder;
 import lombok.Getter;

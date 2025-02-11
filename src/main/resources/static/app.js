@@ -1,3 +1,4 @@
+
 const stompClient = new StompJs.Client({
     brokerURL: 'ws://localhost:8081/gs-guide-websocket'
 });
@@ -5,10 +6,19 @@ const stompClient = new StompJs.Client({
 stompClient.onConnect = (frame) => {
     setConnected(true);
     console.log('Connected: ' + frame);
+
+    const userName = frame.headers["user-name"]; // user-name 추출
+
     stompClient.subscribe('/topic/token', (response) => {
         console.log('Response body: ', response.body);  // 추가: 응답 내용 확인
         const token = JSON.parse(response.body).token; // 응답에서 token 값을 추출
         showToken(token); // token을 화면에 출력
+    });
+
+    stompClient.subscribe('/user/topic/token', (response) => {
+            console.log('Response body: ', response.body);  // 추가: 응답 내용 확인
+            const token = JSON.parse(response.body).token; // 응답에서 token 값을 추출
+            showToken(token); // token을 화면에 출력
     });
 
     stompClient.subscribe('/topic/rank', (response) => {
@@ -16,6 +26,8 @@ stompClient.onConnect = (frame) => {
             const rank = JSON.parse(response.body).rank; // 응답에서 rank 값을 추출
             showRank(rank); // rank를 화면에 출력
     });
+
+    sendUuid();
 };
 
 stompClient.onWebSocketError = (error) => {

@@ -1,11 +1,14 @@
-package com.example.concertTicket_websocket.waitingQueue.dto.response;
+package com.example.concertTicket_websocket.waitingQueue.controller.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 @Getter
+@NoArgsConstructor
 public class TokenResponse {
 
-    private final String token;
+    private String token;
 
     @Builder
     public TokenResponse(String token){

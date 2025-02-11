@@ -1,26 +1,26 @@
 package com.example.concertTicket_websocket.waitingQueue.service;
 
-import com.example.concertTicket_websocket.redis.WaitingQueueDao;
-import com.example.concertTicket_websocket.waitingQueue.dto.response.WaitingRankResponse;
+import com.example.concertTicket_websocket.waitingQueue.controller.dto.response.WaitingRankResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import com.example.concertTicket_websocket.waitingQueue.controller.dto.response.TokenResponse;
+import com.example.concertTicket_websocket.waitingQueue.service.feign.ConcertWaitingQueueClient;
 
 @Service
 @RequiredArgsConstructor
 public class WaitingQueueService {
 
-    private final WaitingQueueDao waitingQueueDao;
-    public String addToWaitingQueue(long concertId, String uuid){
-        return waitingQueueDao.addToWaitingQueue(concertId, uuid);
+    private final ConcertWaitingQueueClient concertWaitingQueueClient;
+
+    // 대기열에 추가하고 토큰 반환
+    public String addToWaitingQueue(long concertId, String uuid) {
+        TokenResponse response = concertWaitingQueueClient.retrieveToken(concertId, uuid);
+        return response.getToken();
     }
 
-    public WaitingRankResponse retrieveWaitingRank(long concertId, String uuid) {
-        long rank = waitingQueueDao.getWaitingRank(concertId, uuid);
-
-        if(rank == -1){
-            return WaitingRankResponse.of(rank, "active");
-        }
-
-        return WaitingRankResponse.of(rank, "waiting");
+    // 대기열 순위 조회
+    public WaitingRankResponse retrieveWaitingRank(long concertId, String token) {
+        return concertWaitingQueueClient.retrieveWaitingRank(concertId, token);
     }
 }

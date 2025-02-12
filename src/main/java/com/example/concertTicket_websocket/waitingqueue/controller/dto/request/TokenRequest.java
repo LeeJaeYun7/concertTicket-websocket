@@ -8,12 +8,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TokenRequest {
 
-    private long concertId;
     private String uuid;
 
     @Builder
-    public TokenRequest(long concertId, String uuid){
-        this.concertId = concertId;
+    public TokenRequest(String uuid){
         this.uuid = uuid;
     }
 }

@@ -42,5 +42,4 @@ public class TokenService {
             log.warn("No session found for token: {}", token);
         }
     }
-
 }

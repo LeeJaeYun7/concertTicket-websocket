@@ -63,8 +63,7 @@ function disconnect() {
 
 function sendUuid() {
      const messageData = {
-            uuid: $("#uuid").val(),
-            concertId: 1  // concertId 값을 추가
+            uuid: $("#uuid").val()
        };
      stompClient.publish({
             destination: "/api/v1/waitingQueue/token",  // 서버에서 처리하는 엔드포인트
@@ -74,8 +73,7 @@ function sendUuid() {
 
 function sendToken() {
      const messageData = {
-            token: $("#token").val(),
-            concertId: 1  // concertId 값을 추가
+            token: $("#token").val()
      };
 
      console.log("Sending message:", messageData);  // 메시지 데이터 확인

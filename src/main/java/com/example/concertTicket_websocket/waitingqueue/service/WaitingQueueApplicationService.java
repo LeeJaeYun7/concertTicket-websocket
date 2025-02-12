@@ -1,7 +1,7 @@
 package com.example.concertTicket_websocket.waitingqueue.service;
 
 import com.example.concertTicket_websocket.waitingqueue.controller.dto.response.WaitingRankResponse;
-import com.example.concertTicket_websocket.websocket.infrastructure.WebSocketDao;
+import com.example.concertTicket_websocket.websocket.infrastructure.WebSocketSessionDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,12 +13,12 @@ import com.example.concertTicket_websocket.waitingqueue.service.feign.ConcertWai
 public class WaitingQueueApplicationService {
 
     private final ConcertWaitingQueueClient concertWaitingQueueClient;
-    private final WebSocketDao webSocketDao;
+    private final WebSocketSessionDao webSocketSessionDao;
 
     // 대기열에 추가하고 토큰 반환
-    public String addToWaitingQueue( String uuid, String sessionId) {
+    public String addToWaitingQueue(String uuid, String sessionId) {
         TokenResponse response = concertWaitingQueueClient.retrieveToken(uuid);
-        webSocketDao.saveSession(response.getToken(), sessionId);
+        webSocketSessionDao.saveSession(response.getToken(), sessionId);
         return response.getToken();
     }
 

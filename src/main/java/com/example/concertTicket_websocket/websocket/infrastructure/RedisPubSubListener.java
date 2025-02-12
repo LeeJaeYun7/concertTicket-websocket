@@ -1,23 +1,30 @@
 package com.example.concertTicket_websocket.websocket.infrastructure;
 
+import com.example.concertTicket_websocket.waitingqueue.infrastructure.ActivatedTokenDao;
 import com.example.concertTicket_websocket.waitingqueue.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
 import org.redisson.api.RTopic;
 import org.redisson.api.RedissonClient;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Service
+@Component
 @Slf4j
 public class RedisPubSubListener {
     private final RedissonClient redissonClient;
     private static final String PUB_SUB_CHANNEL = "tokenChannel";
-    private final TokenService tokenService;
 
-    public RedisPubSubListener(RedissonClient redissonClient, TokenService tokenService) {
+    private static final String LOCK_KEY = "tokenProcessingLock";
+
+    private final TokenService tokenService;
+    private final ActivatedTokenDao activatedTokenDao;
+
+    public RedisPubSubListener(RedissonClient redissonClient, TokenService tokenService, ActivatedTokenDao activatedTokenDao) {
         this.redissonClient = redissonClient;
         this.tokenService = tokenService;
+        this.activatedTokenDao = activatedTokenDao;
         startListening();
     }
 
@@ -29,7 +36,19 @@ public class RedisPubSubListener {
         topic.addListener(String.class, (channel, message) -> {
                 log.info("Received message: {}", message);
                 List<String> tokens = parseMessage(message);
-                tokenService.sendActivationTokenToClient(tokens);
+
+                RLock lock = redissonClient.getLock(LOCK_KEY);
+                lock.lock();
+
+                try {
+                    for (String token : tokens) {
+                        if (!activatedTokenDao.isTokenAlreadySent(token)) {
+                            tokenService.sendActivatedTokenToClient(token);
+                        }
+                    }
+                }finally{
+                    lock.unlock();
+                }
         });
         log.info("Started listening on Redis Pub/Sub channel: {}", PUB_SUB_CHANNEL);
     };

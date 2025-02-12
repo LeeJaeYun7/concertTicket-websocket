@@ -3,12 +3,12 @@ package com.example.concertTicket_websocket.websocket.infrastructure;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RMap;
 import org.redisson.api.RedissonClient;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 
-@Service
+@Component
 @RequiredArgsConstructor
-public class WebSocketDao {
+public class WebSocketSessionDao {
 
     private final RedissonClient redissonClient;
     private static final String TOKEN_SESSION_ID_MAP = "tokenSessionId";

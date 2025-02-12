@@ -18,7 +18,7 @@ import java.security.Principal;
 public class WaitingQueueController {
 
     private final WaitingQueueApplicationService waitingQueueApplicationService;
-    @MessageMapping("/waitingQueue/token")
+    @MessageMapping("/v1/waitingQueue/token")
     @SendTo("/topic/token")
     public TokenResponse retrieveToken(TokenRequest tokenRequest, SimpMessageHeaderAccessor headerAccessor) {
         String uuid = tokenRequest.getUuid();
@@ -30,7 +30,7 @@ public class WaitingQueueController {
         return TokenResponse.of(token);
     }
 
-    @MessageMapping("/waitingQueue/rank")
+    @MessageMapping("/v1/waitingQueue/rank")
     @SendTo("/topic/rank")
     public WaitingRankResponse retrieveWaitingRank(WaitingRankRequest waitingRankRequest) {
         String token = waitingRankRequest.getToken();

@@ -38,7 +38,10 @@ public class RedisPubSubListener {
                 List<String> tokens = parseMessage(message);
 
                 RLock lock = redissonClient.getLock(LOCK_KEY);
+
+                log.info("Attempting to acquire lock for token processing...");
                 lock.lock();
+                log.info("Lock Acquired for token processing");
 
                 try {
                     for (String token : tokens) {
@@ -48,6 +51,7 @@ public class RedisPubSubListener {
                     }
                 }finally{
                     lock.unlock();
+                    log.info("Lock unlocked for token processing");
                 }
         });
         log.info("Started listening on Redis Pub/Sub channel: {}", PUB_SUB_CHANNEL);

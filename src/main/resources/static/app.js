@@ -8,11 +8,16 @@ stompClient.onConnect = (frame) => {
     console.log('Connected: ' + frame);
 
     const userName = frame.headers["user-name"]; // user-name 추출
+    const heartBeat = frame.headers["heart-beat"];
+    const [clientHeartbeat, serverHeartbeat] = heartBeat.split(",").map(Number);
+
+    console.log(`Client heartbeat interval: ${clientHeartbeat}s, Server heartbeat interval: ${serverHeartbeat}s`);
 
     stompClient.subscribe('/topic/token', (response) => {
         console.log('Response body: ', response.body);  // 추가: 응답 내용 확인
         const token = JSON.parse(response.body).token; // 응답에서 token 값을 추출
         showToken(token); // token을 화면에 출력
+        window.token = token
     });
 
     stompClient.subscribe('/user/topic/token', (response) => {
@@ -28,6 +33,14 @@ stompClient.onConnect = (frame) => {
     });
 
     sendUuid();
+
+     if (clientHeartbeat) {
+           setInterval(() => {
+           if(window.token){
+                sendHeartbeat(window.token);
+           }
+       }, clientHeartbeat * 1000);  // 클라이언트의 heartbeat 간격에 맞춰 실행
+     }
 };
 
 stompClient.onWebSocketError = (error) => {
@@ -53,6 +66,22 @@ function setConnected(connected) {
 
 function connect() {
     stompClient.activate();
+}
+
+function sendHeartbeat(token) {
+    const currentTime = new Date().toISOString();  // 현재 시간을 ISO 8601 포맷으로 가져오기
+    console.log("Sending heartbeat at: " + currentTime);
+    const timestampInMillis = new Date(currentTime).getTime();
+
+    const heartbeatData = {
+       token: token,
+       timestamp: timestampInMillis
+    };
+
+    stompClient.publish({
+        destination: '/api/v1/heartbeat',  // 서버에서 Heartbeat을 처리할 경로 (예시)
+        body: JSON.stringify(heartbeatData)
+    });
 }
 
 function disconnect() {

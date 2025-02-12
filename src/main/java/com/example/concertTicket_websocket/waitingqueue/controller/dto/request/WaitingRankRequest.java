@@ -8,12 +8,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class WaitingRankRequest {
 
-    private long concertId;
     private String token;
 
     @Builder
-    public WaitingRankRequest(long concertId, String token){
-        this.concertId = concertId;
+    public WaitingRankRequest(String token){
         this.token = token;
     }
 }

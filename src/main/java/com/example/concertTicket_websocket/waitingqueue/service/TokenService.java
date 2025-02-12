@@ -1,6 +1,6 @@
 package com.example.concertTicket_websocket.waitingqueue.service;
 
-import com.example.concertTicket_websocket.waitingqueue.controller.dto.response.TokenActivationResponse;
+import com.example.concertTicket_websocket.waitingqueue.controller.dto.response.ActivatedTokenResponse;
 import com.example.concertTicket_websocket.waitingqueue.infrastructure.ActivatedTokenDao;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RMap;
@@ -30,7 +30,7 @@ public class TokenService {
 
         if (sessionId != null) {
             try {
-                TokenActivationResponse response = TokenActivationResponse.activated(token);
+                ActivatedTokenResponse response = ActivatedTokenResponse.activated(token);
                 messagingTemplate.convertAndSendToUser(sessionId, "/topic/token", response);
                 log.info("Successfully sent activation token to user with sessionId: {}", sessionId);
 

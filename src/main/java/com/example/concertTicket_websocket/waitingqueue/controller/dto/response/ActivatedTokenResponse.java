@@ -9,14 +9,14 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor(staticName = "of")
-public class TokenActivationResponse {
+public class ActivatedTokenResponse {
     private String token;          // 활성화된 토큰
     private String status;         // 상태 (ACTIVE)
     private LocalDateTime activatedAt; // 활성화 시간
     private String message;        // 알림 메시지
 
-    public static TokenActivationResponse activated(String token) {
-        return new TokenActivationResponse(
+    public static ActivatedTokenResponse activated(String token) {
+        return new ActivatedTokenResponse(
                 token,
                 "ACTIVE",
                 LocalDateTime.now(),

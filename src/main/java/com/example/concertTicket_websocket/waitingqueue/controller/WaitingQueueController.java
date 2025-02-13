@@ -4,7 +4,7 @@ import com.example.concertTicket_websocket.waitingqueue.controller.dto.request.T
 import com.example.concertTicket_websocket.waitingqueue.controller.dto.request.WaitingRankRequest;
 import com.example.concertTicket_websocket.waitingqueue.controller.dto.response.TokenResponse;
 import com.example.concertTicket_websocket.waitingqueue.controller.dto.response.WaitingRankResponse;
-import com.example.concertTicket_websocket.waitingqueue.service.WaitingQueueApplicationService;
+import com.example.concertTicket_websocket.waitingqueue.service.WaitingQueueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -17,7 +17,7 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class WaitingQueueController {
 
-    private final WaitingQueueApplicationService waitingQueueApplicationService;
+    private final WaitingQueueService waitingQueueService;
     @MessageMapping("/v1/waitingQueue/token")
     @SendTo("/topic/token")
     public TokenResponse retrieveToken(TokenRequest tokenRequest, SimpMessageHeaderAccessor headerAccessor) {
@@ -26,7 +26,7 @@ public class WaitingQueueController {
         Principal principal = headerAccessor.getUser();
         String sessionId = principal.getName();
 
-        String token = waitingQueueApplicationService.addToWaitingQueue(uuid, sessionId);
+        String token = waitingQueueService.retrieveToken(uuid, sessionId);
         return TokenResponse.of(token);
     }
 
@@ -34,6 +34,6 @@ public class WaitingQueueController {
     @SendTo("/topic/rank")
     public WaitingRankResponse retrieveWaitingRank(WaitingRankRequest waitingRankRequest) {
         String token = waitingRankRequest.getToken();
-        return waitingQueueApplicationService.retrieveWaitingRank(token);
+        return waitingQueueService.retrieveWaitingRank(token);
     }
 }

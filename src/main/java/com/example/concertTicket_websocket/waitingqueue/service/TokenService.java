@@ -32,11 +32,11 @@ public class TokenService {
             try {
                 ActivatedTokenResponse response = ActivatedTokenResponse.activated(token);
                 messagingTemplate.convertAndSendToUser(sessionId, "/topic/token", response);
-                log.info("Successfully sent activation token to user with sessionId: {}", sessionId);
+                log.info("Successfully sent activated token to user with sessionId: {}", sessionId);
 
                 activatedTokenDao.markTokenAsSent(token);
             } catch (Exception e) {
-                log.error("Failed to send activation token to user with sessionId: {}. Error: {}", sessionId, e.getMessage(), e);
+                log.error("Failed to send activated token to user with sessionId: {}. Error: {}", sessionId, e.getMessage(), e);
             }
         } else {
             log.warn("No session found for token: {}", token);

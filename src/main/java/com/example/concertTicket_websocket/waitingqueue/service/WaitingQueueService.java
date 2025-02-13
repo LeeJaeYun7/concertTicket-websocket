@@ -34,7 +34,7 @@ public class WaitingQueueService {
     }
 
     // 대기열의 상태가 변경되었을 때(ex) 활성화 -> 비활성화 or 비활성화 -> 활성화)
-    // 해당 정보를 전체 Websocket 클라이언트에 broadcast 한다
+    // 해당 정보를 전체 Websocket 클라이언트에 broadcast 합니다
     public void broadcastWaitingQueueStatusToClient(String waitingQueueStatus) {
             try {
                 WaitingQueueStatusResponse response = WaitingQueueStatusResponse.of(waitingQueueStatus);

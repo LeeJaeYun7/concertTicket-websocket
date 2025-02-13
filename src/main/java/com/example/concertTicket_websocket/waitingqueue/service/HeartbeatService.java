@@ -13,7 +13,7 @@ public class HeartbeatService {
 
     private static final String HEARTBEAT_HASH_KEY = "userHeartbeat";
 
-    // 사용자의 Heartbeat 정보를 최신화하기 위한 메소드
+    // 사용자의 Heartbeat 정보를 최신화하기 위한 기능
     public void updateUserHealthStatus(String token, String timestamp) {
         RMap<String, String> heartbeatMap = redissonClient.getMap(HEARTBEAT_HASH_KEY);
         heartbeatMap.put(token, timestamp);

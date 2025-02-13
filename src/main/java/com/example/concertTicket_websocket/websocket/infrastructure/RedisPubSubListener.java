@@ -34,9 +34,9 @@ public class RedisPubSubListener {
         startWaitingQueueStatusChannelListening();
     }
 
-    // 활성화된 토큰 정보를 Redis Pub/Sub 채널을 통해 수신하는 메소드
-    // 웹소켓 서버가 이중화 되었음을 고려해, Redis 분산락을 통해서 1번만 실행되도록 보장한다
-    // 각 Websocket 클라이언트에 해당하는 토큰을 1:1로 발송한다.
+    // 활성화된 토큰 정보를 Redis Pub/Sub 채널을 통해 수신하는 기능
+    // 웹소켓 서버가 이중화 되었음을 고려해, Redis 분산락을 통해서 1번만 실행되도록 보장합니다
+    // 사용자의 Websocket 클라이언트에 해당하는 토큰을 매칭하여 발송합니다.
     private void startTokenChannelListening() {
         // Redis 채널을 구독하기 위한 RTopic 객체
         RTopic topic = redissonClient.getTopic(TOKEN_PUB_SUB_CHANNEL);

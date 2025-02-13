@@ -23,6 +23,9 @@ public class TokenService {
         this.activatedTokenDao = activatedTokenDao;
     }
 
+    // 사용자가 대기열->활성화열로 이동했을 때, 활성화된 토큰 정보를 클라이언트에 보내는 기능입니다
+    // 이 기능은 Broadcast 방식이 아니라,
+    // 해당하는 WebSocket 클라이언트에 매칭되는 토큰을 1:1로 보내는 기능입니다.
     public void sendActivatedTokenToClient(String token) {
         log.info("Processing token: {}", token);
         String sessionId = tokenSessionIdMap.get(token);

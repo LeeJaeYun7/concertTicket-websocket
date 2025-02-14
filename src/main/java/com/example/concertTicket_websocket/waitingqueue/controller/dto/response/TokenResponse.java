@@ -1,4 +1,4 @@
-package com.example.concertTicket_websocket.waitingQueue.controller.dto.response;
+package com.example.concertTicket_websocket.waitingqueue.controller.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +17,7 @@ public class TokenResponse {
 
     public static TokenResponse of(String token){
         return TokenResponse.builder()
-                .token(token)
-                .build();
+                            .token(token)
+                            .build();
     }
 }

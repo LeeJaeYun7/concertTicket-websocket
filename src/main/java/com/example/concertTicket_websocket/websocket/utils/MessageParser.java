@@ -1,7 +1,10 @@
 package com.example.concertTicket_websocket.websocket.utils;
 
+import org.springframework.stereotype.Component;
+
 import java.util.List;
 
+@Component
 public class MessageParser {
 
     public List<String> parseMessage(String message) {

@@ -1,7 +1,9 @@
 package com.example.concertTicket_websocket.waitingqueue.controller;
 
+import com.example.concertTicket_websocket.waitingqueue.controller.dto.request.ReconnectRequest;
 import com.example.concertTicket_websocket.waitingqueue.controller.dto.request.TokenRequest;
 import com.example.concertTicket_websocket.waitingqueue.controller.dto.request.WaitingRankRequest;
+import com.example.concertTicket_websocket.waitingqueue.controller.dto.response.ReconnectResponse;
 import com.example.concertTicket_websocket.waitingqueue.controller.dto.response.TokenResponse;
 import com.example.concertTicket_websocket.waitingqueue.controller.dto.response.WaitingRankResponse;
 import com.example.concertTicket_websocket.waitingqueue.service.WaitingQueueService;
@@ -28,6 +30,18 @@ public class WaitingQueueController {
 
         String token = waitingQueueService.retrieveToken(uuid, sessionId);
         return TokenResponse.of(token);
+    }
+
+    @MessageMapping("/v1/waitingQueue/reconnect")
+    @SendTo("/topic/reconnect")
+    public ReconnectResponse reConnect(ReconnectRequest reconnectRequest, SimpMessageHeaderAccessor headerAccessor) {
+        String token = reconnectRequest.getToken();
+
+        Principal principal = headerAccessor.getUser();
+        String sessionId = principal.getName();
+
+        boolean result = waitingQueueService.reconnect(token, sessionId);
+        return ReconnectResponse.of(result);
     }
 
     @MessageMapping("/v1/waitingQueue/rank")

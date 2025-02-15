@@ -20,10 +20,20 @@ stompClient.onConnect = (frame) => {
         window.token = token
     });
 
+    stompClient.subscribe('/topic/waitingQueue/status', (response) => {
+        console.log('Response body: ', response.body);  // 추가: 응답 내용 확인
+        const status = JSON.parse(response.body).status; // 응답에서 status 값을 추출
+    });
+
     stompClient.subscribe('/user/topic/token', (response) => {
-            console.log('Response body: ', response.body);  // 추가: 응답 내용 확인
-            const token = JSON.parse(response.body).token; // 응답에서 token 값을 추출
-            showToken(token); // token을 화면에 출력
+        console.log('Response body: ', response.body);  // 추가: 응답 내용 확인
+        const token = JSON.parse(response.body).token; // 응답에서 token 값을 추출
+        showToken(token); // token을 화면에 출력
+    });
+
+    stompClient.subscribe('/user/topic/reconnect', (response) => {
+        console.log('Response body: ', response.body);  // 추가: 응답 내용 확인
+        const result = JSON.parse(response.body).result; // 응답에서 result 값을 추출
     });
 
     stompClient.subscribe('/topic/rank', (response) => {

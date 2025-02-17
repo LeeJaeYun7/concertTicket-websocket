@@ -29,7 +29,9 @@ public class WaitingQueueController {
         String sessionId = principal.getName();
 
         String token = waitingQueueService.retrieveToken(uuid, sessionId);
-        return TokenResponse.of(token);
+        String waitingQueueStatus = waitingQueueService.retrieveWaitingQueueStatus();
+        WaitingRankResponse waitingRankResponse = waitingQueueService.retrieveWaitingRank(token);
+        return TokenResponse.of(token, waitingQueueStatus, waitingRankResponse.getWaitingRank());
     }
 
     @MessageMapping("/v1/waitingQueue/reconnect")

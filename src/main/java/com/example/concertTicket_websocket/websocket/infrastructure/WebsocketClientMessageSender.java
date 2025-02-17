@@ -14,10 +14,10 @@ public class WebsocketClientMessageSender {
     private final SimpMessagingTemplate messagingTemplate;
 
     public void sendActivatedTokenToClient(String sessionId, ActivatedTokenResponse response) {
-        messagingTemplate.convertAndSendToUser(sessionId, WebsocketInfo.TOKEN_DESTINATION.getValue(), response);
+        messagingTemplate.convertAndSendToUser(sessionId, WebsocketInfo.TOKEN_DESTINATION, response);
     }
 
     public void broadcastWaitingQueueStatusToClient(WaitingQueueStatusResponse response){
-        messagingTemplate.convertAndSend(WebsocketInfo.WAITING_QUEUE_STATUS_DESTINATION.getValue(), response);
+        messagingTemplate.convertAndSend(WebsocketInfo.WAITING_QUEUE_STATUS_DESTINATION, response);
     }
 }

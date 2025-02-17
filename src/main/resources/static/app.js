@@ -15,7 +15,7 @@ stompClient.onConnect = (frame) => {
 
     stompClient.subscribe('/topic/token', (response) => {
         console.log('Response body: ', response.body);  // 추가: 응답 내용 확인
-        const token = JSON.parse(response.body).token; // 응답에서 token 값을 추출
+        const token = JSON.parse(response.body).token;
         showToken(token); // token을 화면에 출력
         window.token = token
     });
@@ -37,9 +37,9 @@ stompClient.onConnect = (frame) => {
     });
 
     stompClient.subscribe('/topic/rank', (response) => {
-            console.log('Response body: ', response.body);  // 추가: 응답 내용 확인
-            const rank = JSON.parse(response.body).rank; // 응답에서 rank 값을 추출
-            showRank(rank); // rank를 화면에 출력
+        console.log('Response body: ', response.body);  // 추가: 응답 내용 확인
+        const rank = JSON.parse(response.body).rank; // 응답에서 rank 값을 추출
+        showRank(rank); // rank를 화면에 출력
     });
 
     sendUuid();

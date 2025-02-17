@@ -2,6 +2,7 @@ package com.example.concertTicket_websocket.waitingqueue.service;
 
 import com.example.concertTicket_websocket.waitingqueue.controller.dto.response.WaitingQueueStatusResponse;
 import com.example.concertTicket_websocket.waitingqueue.controller.dto.response.WaitingRankResponse;
+import com.example.concertTicket_websocket.waitingqueue.infrastructure.WaitingQueueStatusDAO;
 import com.example.concertTicket_websocket.websocket.infrastructure.TokenSessionDAO;
 import com.example.concertTicket_websocket.websocket.infrastructure.WebsocketClientMessageSender;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ public class WaitingQueueService {
 
     private final ConcertWaitingQueueClient concertWaitingQueueClient;
     private final TokenSessionDAO tokenSessionDao;
+    private final WaitingQueueStatusDAO waitingQueueStatusDAO;
     private final WebsocketClientMessageSender websocketClientMessageSender;
 
     // 토큰 반환
@@ -53,5 +55,9 @@ public class WaitingQueueService {
         } catch (Exception e) {
             log.error("Failed to send waiting queue status, {}", e.getMessage(), e);
         }
+    }
+
+    public String retrieveWaitingQueueStatus() {
+        return waitingQueueStatusDAO.getWaitingQueueStatus();
     }
 }

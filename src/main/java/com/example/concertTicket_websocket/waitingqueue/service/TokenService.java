@@ -1,7 +1,9 @@
 package com.example.concertTicket_websocket.waitingqueue.service;
 
 import com.example.concertTicket_websocket.waitingqueue.controller.dto.response.ActivatedTokenResponse;
+import com.example.concertTicket_websocket.waitingqueue.controller.dto.response.WaitingRankResponse;
 import com.example.concertTicket_websocket.waitingqueue.infrastructure.ActivatedTokenDao;
+import com.example.concertTicket_websocket.websocket.dto.WaitingDTO;
 import com.example.concertTicket_websocket.websocket.infrastructure.TokenSessionDAO;
 import com.example.concertTicket_websocket.websocket.infrastructure.WebsocketClientMessageSender;
 import lombok.RequiredArgsConstructor;
@@ -40,4 +42,27 @@ public class TokenService {
             log.error("Failed to send activated token to user with sessionId: {}. Error: {}", sessionId, e.getMessage(), e);
         }
     }
+
+    /*
+    public void sendWaitingTokenToClient(WaitingDTO token) {
+        log.info("Processing token: {}", token);
+        String sessionId = tokenSessionDAO.getTokenSession(token.getToken());
+        log.info("User session ID: {}", sessionId);
+
+        if (null == sessionId) {
+            log.warn("No session found for token: {}", token);
+            return;
+        }
+
+        try {
+            WaitingRankResponse response = ActivatedTokenResponse.activated(token);
+            websocketClientMessageSender.sendActivatedTokenToClient(sessionId, response);
+
+            log.info("Successfully sent activated token to user with sessionId: {}", sessionId);
+            activatedTokenDao.markTokenAsSent(token);
+        } catch (Exception e) {
+            log.error("Failed to send activated token to user with sessionId: {}. Error: {}", sessionId, e.getMessage(), e);
+        }
+    }
+    */
 }

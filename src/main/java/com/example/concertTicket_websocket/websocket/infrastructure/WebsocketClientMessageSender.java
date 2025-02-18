@@ -2,6 +2,7 @@ package com.example.concertTicket_websocket.websocket.infrastructure;
 
 import com.example.concertTicket_websocket.waitingqueue.controller.dto.response.ActivatedTokenResponse;
 import com.example.concertTicket_websocket.waitingqueue.controller.dto.response.WaitingQueueStatusResponse;
+import com.example.concertTicket_websocket.waitingqueue.controller.dto.response.WaitingRankResponse;
 import com.example.concertTicket_websocket.websocket.infrastructure.enums.WebsocketInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -15,6 +16,10 @@ public class WebsocketClientMessageSender {
 
     public void sendActivatedTokenToClient(String sessionId, ActivatedTokenResponse response) {
         messagingTemplate.convertAndSendToUser(sessionId, WebsocketInfo.TOKEN_DESTINATION, response);
+    }
+
+    public void sendWaitingTokenToClient(String sessionId, WaitingRankResponse response) {
+        messagingTemplate.convertAndSendToUser(sessionId, WebsocketInfo.WAITING_RANK_DESTINATION, response);
     }
 
     public void broadcastWaitingQueueStatusToClient(WaitingQueueStatusResponse response){

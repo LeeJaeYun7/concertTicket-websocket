@@ -19,8 +19,8 @@ public class WaitingRankResponse {
 
     public static WaitingRankResponse of(long waitingRank, String status){
         return WaitingRankResponse.builder()
-                .waitingRank(waitingRank)
-                .status(status)
-                .build();
+                                  .waitingRank(waitingRank)
+                                  .status(status)
+                                  .build();
     }
 }

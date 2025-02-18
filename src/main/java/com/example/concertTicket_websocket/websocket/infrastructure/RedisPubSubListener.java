@@ -1,11 +1,12 @@
 package com.example.concertTicket_websocket.websocket.infrastructure;
 
-import com.example.concertTicket_websocket.waitingqueue.infrastructure.ActivatedTokenDao;
+import com.example.concertTicket_websocket.waitingqueue.infrastructure.ActivatedTokenDAO;
+import com.example.concertTicket_websocket.waitingqueue.infrastructure.WaitingTokenDAO;
 import com.example.concertTicket_websocket.websocket.dto.WaitingDTO;
 import com.example.concertTicket_websocket.websocket.infrastructure.enums.RedisKey;
 import com.example.concertTicket_websocket.waitingqueue.service.TokenService;
 import com.example.concertTicket_websocket.waitingqueue.service.WaitingQueueService;
-import com.example.concertTicket_websocket.websocket.utils.MessageParser;
+import com.example.concertTicket_websocket.websocket.utils.JsonConverter;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +25,9 @@ public class RedisPubSubListener {
     private final RedissonClient redissonClient;
     private final TokenService tokenService;
     private final WaitingQueueService waitingQueueService;
-    private final ActivatedTokenDao activatedTokenDao;
-    private final MessageParser messageParser;
+    private final ActivatedTokenDAO activatedTokenDAO;
+    private final WaitingTokenDAO waitingTokenDAO;
+    private final JsonConverter jsonConverter;
 
     @PostConstruct
     public void init() {
@@ -47,8 +49,8 @@ public class RedisPubSubListener {
 
         // 메시지 리스너 등록
         topic.addListener(String.class, (channel, message) -> {
-                log.info("Received message: {}", message);
-                List<String> tokens = messageParser.parseActiveTokenMessage(message);
+                log.info("Received active toekn message: {}", message);
+                List<String> tokens = jsonConverter.convertFromJsonToList(message, String.class);
 
                 RLock lock = redissonClient.getLock(RedisKey.ACTIVE_TOKEN_PROCESSING_LOCK_KEY);
 
@@ -57,7 +59,7 @@ public class RedisPubSubListener {
                 log.info("Lock Acquired for active token processing");
 
                 for (String token : tokens) {
-                    if (!activatedTokenDao.isTokenAlreadySent(token)) {
+                    if (!activatedTokenDAO.isTokenAlreadySent(token)) {
                         tokenService.sendActivatedTokenToClient(token);
                     }
                 }
@@ -77,21 +79,22 @@ public class RedisPubSubListener {
 
         // 메시지 리스너 등록
         topic.addListener(String.class, (channel, message) -> {
-            log.info("Received message: {}", message);
-            List<WaitingDTO> tokens = messageParser.parseWaitingTokenMessage(message);
+            log.info("Received waiting token message: {}", message);
+            List<WaitingDTO> waitingDTOs = jsonConverter.convertFromJsonToList(message, WaitingDTO.class);
 
             RLock lock = redissonClient.getLock(RedisKey.WAITING_TOKEN_PROCESSING_LOCK_KEY);
 
             log.info("Attempting to acquire lock for waiting token processing...");
             lock.lock();
             log.info("Lock Acquired for waiting token processing");
-            /*
-            for (WaitingDTO token : tokens) {
-                if (!activatedTokenDao.isTokenAlreadySent(token)) {
-                    tokenService.sendWaitingTokenToClient(token);
+
+            for (WaitingDTO waitingDTO : waitingDTOs) {
+                String token = waitingDTO.getToken();
+                if (!waitingTokenDAO.isTokenAlreadySent(token)) {
+                    tokenService.sendWaitingTokenToClient(waitingDTO);
                 }
             }
-            */
+
             lock.unlock();
             log.info("Lock unlocked for waiting token processing");
         });

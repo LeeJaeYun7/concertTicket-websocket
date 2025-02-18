@@ -32,7 +32,6 @@ public class RedisPubSubListener {
             startWaitingQueueStatusChannelListening();
             startActiveTokenChannelListening();
             startWaitingTokenChannelListening();
-            startTokenRemovalChannelListening();
         } catch (Exception e) {
             log.error("Error during Redis Pub/Sub channel initialization", e);
         }
@@ -50,19 +49,11 @@ public class RedisPubSubListener {
                 log.info("Received active token message: {}", message);
                 List<String> tokens = jsonConverter.convertFromJsonToList(message, String.class);
 
-                RLock lock = redissonClient.getLock(RedisKey.ACTIVE_TOKEN_PROCESSING_LOCK_KEY);
-
-                log.info("Attempting to acquire lock for active token processing...");
-                lock.lock();
-                log.info("Lock Acquired for active token processing");
-
                 for (String token : tokens) {
                     if (tokenSessionManager.isExistsToken(token)) {
                         tokenService.sendActivatedTokenToClient(token);
                     }
                 }
-                lock.unlock();
-                log.info("Lock unlocked for active token processing");
         });
         log.info("Started listening on Redis Pub/Sub channel: {}", RedisKey.ACTIVE_TOKEN_PUB_SUB_CHANNEL);
     };
@@ -80,21 +71,12 @@ public class RedisPubSubListener {
             log.info("Received waiting token message: {}", message);
             List<WaitingDTO> waitingDTOs = jsonConverter.convertFromJsonToList(message, WaitingDTO.class);
 
-            RLock lock = redissonClient.getLock(RedisKey.WAITING_TOKEN_PROCESSING_LOCK_KEY);
-
-            log.info("Attempting to acquire lock for waiting token processing...");
-            lock.lock();
-            log.info("Lock Acquired for waiting token processing");
-
             for (WaitingDTO waitingDTO : waitingDTOs) {
                 String token = waitingDTO.getToken();
                 if (tokenSessionManager.isExistsToken(token)) {
                     tokenService.sendWaitingTokenToClient(waitingDTO);
                 }
             }
-
-            lock.unlock();
-            log.info("Lock unlocked for waiting token processing");
         });
         log.info("Started listening on Redis Pub/Sub channel: {}", RedisKey.WAITING_TOKEN_PUB_SUB_CHANNEL);
     };
@@ -128,23 +110,5 @@ public class RedisPubSubListener {
             }
         });
         log.info("Started listening on Redis Pub/Sub channel: {}", RedisKey.WAITING_QUEUE_STATUS_PUB_SUB_CHANNEL);
-    };
-
-    private void startTokenRemovalChannelListening() {
-        // Redis 채널을 구독하기 위한 RTopic 객체
-        RTopic topic = redissonClient.getTopic(RedisKey.TOKEN_REMOVAL_PUB_SUB_CHANNEL);
-
-        // 메시지 리스너 등록
-        topic.addListener(String.class, (channel, message) -> {
-            log.info("Received removed token message: {}", message);
-            List<String> removedTokens = jsonConverter.convertFromJsonToList(message, String.class);
-
-            for(String token: removedTokens){
-                if(tokenSessionManager.isExistsToken(token)){
-                    tokenSessionManager.removeToken(token);
-                }
-            }
-        });
-        log.info("Started listening on Redis Pub/Sub channel: {}", RedisKey.TOKEN_REMOVAL_PUB_SUB_CHANNEL);
     };
 }

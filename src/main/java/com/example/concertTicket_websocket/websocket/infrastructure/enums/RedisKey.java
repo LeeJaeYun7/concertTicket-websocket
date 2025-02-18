@@ -5,7 +5,6 @@ public interface RedisKey {
 
     String WAITING_TOKEN_PUB_SUB_CHANNEL = "waitingTokenChannel";
     String WAITING_QUEUE_STATUS_PUB_SUB_CHANNEL = "waitingQueueStatusChannel";
-    String TOKEN_REMOVAL_PUB_SUB_CHANNEL = "tokenRemovalChannel";
     String ACTIVE_TOKEN_PROCESSING_LOCK_KEY = "activeTokenProcessingLock";
     String WAITING_TOKEN_PROCESSING_LOCK_KEY = "waitingTokenProcessingLock";
 

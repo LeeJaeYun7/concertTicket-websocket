@@ -1,6 +1,5 @@
 package com.example.concertTicket_websocket.config;
 
-import com.example.concertTicket_websocket.websocket.infrastructure.CustomHandshakeHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +24,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/gs-guide-websocket").setHandshakeHandler(new CustomHandshakeHandler());
+        registry.addEndpoint("/gs-guide-websocket");
     }
 
     @Bean

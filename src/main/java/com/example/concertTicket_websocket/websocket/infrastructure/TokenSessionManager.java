@@ -24,7 +24,7 @@ public class TokenSessionManager {
         return tokenSessionMap.get(token);
     }
 
-    public void removeToken(String token) {
-        tokenSessionMap.remove(token);
+    public void removeTokenBySessionId(String sessionId) {
+        tokenSessionMap.keySet().removeIf(key -> tokenSessionMap.get(key).equals(sessionId));
     }
 }

@@ -24,12 +24,11 @@ public class WaitingQueueController {
     @SendTo("/topic/token")
     public TokenResponse retrieveToken(TokenRequest tokenRequest, SimpMessageHeaderAccessor headerAccessor) {
         String uuid = tokenRequest.getUuid();
-
-        Principal principal = headerAccessor.getUser();
-        String sessionId = principal.getName();
+        String sessionId = headerAccessor.getSessionId();
 
         String token = waitingQueueService.retrieveToken(uuid, sessionId);
         String waitingQueueStatus = waitingQueueService.retrieveWaitingQueueStatus();
+
         WaitingRankResponse waitingRankResponse = waitingQueueService.retrieveWaitingRank(token);
         return TokenResponse.of(token, waitingQueueStatus, waitingRankResponse.getWaitingRank());
     }

@@ -36,7 +36,7 @@ stompClient.onConnect = (frame) => {
         const result = JSON.parse(response.body).result; // 응답에서 result 값을 추출
     });
 
-    stompClient.subscribe('/topic/rank', (response) => {
+    stompClient.subscribe('/user/topic/rank', (response) => {
         console.log('Response body: ', response.body);  // 추가: 응답 내용 확인
         const rank = JSON.parse(response.body).rank; // 응답에서 rank 값을 추출
         showRank(rank); // rank를 화면에 출력

@@ -1,7 +1,5 @@
 package com.example.concertTicket_websocket.websocket.infrastructure;
 
-import com.example.concertTicket_websocket.waitingqueue.infrastructure.ActivatedTokenDAO;
-import com.example.concertTicket_websocket.waitingqueue.infrastructure.WaitingTokenDAO;
 import com.example.concertTicket_websocket.websocket.dto.WaitingDTO;
 import com.example.concertTicket_websocket.websocket.infrastructure.enums.RedisKey;
 import com.example.concertTicket_websocket.waitingqueue.service.TokenService;
@@ -24,9 +22,8 @@ public class RedisPubSubListener {
 
     private final RedissonClient redissonClient;
     private final TokenService tokenService;
+    private final TokenSessionManager tokenSessionManager;
     private final WaitingQueueService waitingQueueService;
-    private final ActivatedTokenDAO activatedTokenDAO;
-    private final WaitingTokenDAO waitingTokenDAO;
     private final JsonConverter jsonConverter;
 
     @PostConstruct
@@ -35,6 +32,7 @@ public class RedisPubSubListener {
             startWaitingQueueStatusChannelListening();
             startActiveTokenChannelListening();
             startWaitingTokenChannelListening();
+            startTokenRemovalChannelListening();
         } catch (Exception e) {
             log.error("Error during Redis Pub/Sub channel initialization", e);
         }
@@ -49,7 +47,7 @@ public class RedisPubSubListener {
 
         // 메시지 리스너 등록
         topic.addListener(String.class, (channel, message) -> {
-                log.info("Received active toekn message: {}", message);
+                log.info("Received active token message: {}", message);
                 List<String> tokens = jsonConverter.convertFromJsonToList(message, String.class);
 
                 RLock lock = redissonClient.getLock(RedisKey.ACTIVE_TOKEN_PROCESSING_LOCK_KEY);
@@ -59,7 +57,7 @@ public class RedisPubSubListener {
                 log.info("Lock Acquired for active token processing");
 
                 for (String token : tokens) {
-                    if (!activatedTokenDAO.isTokenAlreadySent(token)) {
+                    if (tokenSessionManager.isExistsToken(token)) {
                         tokenService.sendActivatedTokenToClient(token);
                     }
                 }
@@ -90,7 +88,7 @@ public class RedisPubSubListener {
 
             for (WaitingDTO waitingDTO : waitingDTOs) {
                 String token = waitingDTO.getToken();
-                if (!waitingTokenDAO.isTokenAlreadySent(token)) {
+                if (tokenSessionManager.isExistsToken(token)) {
                     tokenService.sendWaitingTokenToClient(waitingDTO);
                 }
             }
@@ -130,5 +128,23 @@ public class RedisPubSubListener {
             }
         });
         log.info("Started listening on Redis Pub/Sub channel: {}", RedisKey.WAITING_QUEUE_STATUS_PUB_SUB_CHANNEL);
+    };
+
+    private void startTokenRemovalChannelListening() {
+        // Redis 채널을 구독하기 위한 RTopic 객체
+        RTopic topic = redissonClient.getTopic(RedisKey.TOKEN_REMOVAL_PUB_SUB_CHANNEL);
+
+        // 메시지 리스너 등록
+        topic.addListener(String.class, (channel, message) -> {
+            log.info("Received removed token message: {}", message);
+            List<String> removedTokens = jsonConverter.convertFromJsonToList(message, String.class);
+
+            for(String token: removedTokens){
+                if(tokenSessionManager.isExistsToken(token)){
+                    tokenSessionManager.removeToken(token);
+                }
+            }
+        });
+        log.info("Started listening on Redis Pub/Sub channel: {}", RedisKey.TOKEN_REMOVAL_PUB_SUB_CHANNEL);
     };
 }

@@ -1,8 +1,10 @@
 package com.example.concertTicket_websocket.websocket.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class WaitingDTO {
     private String timestamp;
     private String uuid;

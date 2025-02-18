@@ -3,7 +3,8 @@ package com.example.concertTicket_websocket.waitingqueue.service;
 import com.example.concertTicket_websocket.waitingqueue.controller.dto.response.WaitingQueueStatusResponse;
 import com.example.concertTicket_websocket.waitingqueue.controller.dto.response.WaitingRankResponse;
 import com.example.concertTicket_websocket.waitingqueue.infrastructure.WaitingQueueStatusDAO;
-import com.example.concertTicket_websocket.websocket.infrastructure.TokenSessionDAO;
+import com.example.concertTicket_websocket.websocket.infrastructure.HeartbeatDAO;
+import com.example.concertTicket_websocket.websocket.infrastructure.TokenSessionManager;
 import com.example.concertTicket_websocket.websocket.infrastructure.WebsocketClientMessageSender;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,25 +19,25 @@ import com.example.concertTicket_websocket.waitingqueue.service.feign.ConcertWai
 public class WaitingQueueService {
 
     private final ConcertWaitingQueueClient concertWaitingQueueClient;
-    private final TokenSessionDAO tokenSessionDao;
+    private final TokenSessionManager tokenSessionManager;
+    private final HeartbeatDAO heartbeatDAO;
     private final WaitingQueueStatusDAO waitingQueueStatusDAO;
     private final WebsocketClientMessageSender websocketClientMessageSender;
 
     // 토큰 반환
     public String retrieveToken(String uuid, String sessionId) {
         TokenResponse response = concertWaitingQueueClient.retrieveToken(uuid);
-        tokenSessionDao.saveTokenSession(response.getToken(), sessionId);
+        tokenSessionManager.saveTokenSession(response.getToken(), sessionId);
         return response.getToken();
     }
 
     public boolean reconnect(String token, String sessionId){
-        boolean isExist = tokenSessionDao.isTokenSessionExists(token);
+        boolean isExist = heartbeatDAO.isTokenTimestampExists(token);
 
         if (!isExist) {
             return false;
         }
-
-        tokenSessionDao.saveTokenSession(token, sessionId);
+        tokenSessionManager.saveTokenSession(token, sessionId);
         return true;
     }
 

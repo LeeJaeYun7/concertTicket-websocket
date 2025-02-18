@@ -13,6 +13,11 @@ import java.util.concurrent.TimeUnit;
 public class HeartbeatDAO {
 
     private final RedissonClient redissonClient;
+
+    public boolean isTokenTimestampExists(String token) {
+        RMapCache<String, String> heartbeatMap = redissonClient.getMapCache(RedisKey.HEARTBEAT_HASH_KEY);
+        return heartbeatMap.containsKey(token);
+    }
     
 
     // 사용자의 Heartbeat 정보를 최신화하기 위한 기능

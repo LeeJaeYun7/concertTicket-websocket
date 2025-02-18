@@ -18,14 +18,9 @@ public class HeartbeatController {
     private final HeartbeatService heartbeatService;
 
     @MessageMapping("/v1/heartbeat")
-    public void receiveHeartbeat(HeartbeatRequest heartbeatRequest, SimpMessageHeaderAccessor headerAccessor) {
-        Principal principal = headerAccessor.getUser();
-        String sessionId = principal.getName();
-
+    public void receiveHeartbeat(HeartbeatRequest heartbeatRequest) {
         String token = heartbeatRequest.getToken();
         String timestamp = heartbeatRequest.getTimestamp();
-
-        log.info("Received Heartbeat from session, {}", sessionId);
         heartbeatService.updateUserHealthStatus(token, timestamp);
     }
 }

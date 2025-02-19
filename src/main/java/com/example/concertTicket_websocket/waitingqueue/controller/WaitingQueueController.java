@@ -8,6 +8,7 @@ import com.example.concertTicket_websocket.waitingqueue.controller.dto.response.
 import com.example.concertTicket_websocket.waitingqueue.controller.dto.response.WaitingRankResponse;
 import com.example.concertTicket_websocket.waitingqueue.service.WaitingQueueService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -17,6 +18,7 @@ import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class WaitingQueueController {
 
     private final WaitingQueueService waitingQueueService;
@@ -24,12 +26,15 @@ public class WaitingQueueController {
     @SendTo("/topic/token")
     public TokenResponse retrieveToken(TokenRequest tokenRequest, SimpMessageHeaderAccessor headerAccessor) {
         String uuid = tokenRequest.getUuid();
-        String sessionId = headerAccessor.getSessionId();
+
+        Principal principal = headerAccessor.getUser();
+        String sessionId = principal.getName();
 
         String token = waitingQueueService.retrieveToken(uuid, sessionId);
         String waitingQueueStatus = waitingQueueService.retrieveWaitingQueueStatus();
 
         WaitingRankResponse waitingRankResponse = waitingQueueService.retrieveWaitingRank(token);
+        log.info("session connected {}" , sessionId);
         return TokenResponse.of(token, waitingQueueStatus, waitingRankResponse.getWaitingRank());
     }
 
@@ -42,6 +47,7 @@ public class WaitingQueueController {
         String sessionId = principal.getName();
 
         boolean result = waitingQueueService.reconnect(token, sessionId);
+
         return ReconnectResponse.of(result);
     }
 

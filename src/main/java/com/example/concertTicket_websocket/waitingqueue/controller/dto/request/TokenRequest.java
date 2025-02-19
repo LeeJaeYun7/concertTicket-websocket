@@ -1,4 +1,4 @@
-package com.example.concertTicket_websocket.waitingQueue.controller.dto.request;
+package com.example.concertTicket_websocket.waitingqueue.controller.dto.request;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -8,12 +8,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TokenRequest {
 
-    private long concertId;
     private String uuid;
 
     @Builder
-    public TokenRequest(long concertId, String uuid){
-        this.concertId = concertId;
+    public TokenRequest(String uuid){
         this.uuid = uuid;
     }
 }

@@ -1,4 +1,4 @@
-package com.example.concertTicket_websocket.waitingQueue.controller.dto.response;
+package com.example.concertTicket_websocket.waitingqueue.controller.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -19,8 +19,8 @@ public class WaitingRankResponse {
 
     public static WaitingRankResponse of(long waitingRank, String status){
         return WaitingRankResponse.builder()
-                .waitingRank(waitingRank)
-                .status(status)
-                .build();
+                                  .waitingRank(waitingRank)
+                                  .status(status)
+                                  .build();
     }
 }
